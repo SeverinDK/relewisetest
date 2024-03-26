@@ -40,6 +40,8 @@ namespace RelewiseTest.Parsers
             XNamespace gNamespace = "http://base.google.com/ns/1.0";
             IEnumerable<XElement>? items = XDocument.Parse(xml)?.Root?.Element("channel")?.Elements("item") ?? throw new FormatException("Invalid XML data");
 
+	        double importTimestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
             IEnumerable<Task<Product?>> tasks = items.Select(async item => {
                 string? id = item.Element(gNamespace + "id")?.Value;
                 string? brand = item.Element(gNamespace + "brand")?.Value;
@@ -84,7 +86,8 @@ namespace RelewiseTest.Parsers
                             { "ShortDescription", new Multilingual(language, description)},
                             { "InStock", availability == "in stock" },
                             { "Colors", new MultilingualCollection(language, [color]) },
-                            { "PrimaryColor", new Multilingual(language, color) }
+                            { "PrimaryColor", new Multilingual(language, color) },
+                            { "ImportedAt", importTimestamp }
                         }
                 };
 
@@ -98,7 +101,8 @@ namespace RelewiseTest.Parsers
                     - Colors: {product.Data["Colors"]}
                     - PrimaryColor: {product.Data["PrimaryColor"]}
                     - InStock: {product.Data["InStock"]}
-                    - CategoryPath: {product.CategoryPaths[0]}");
+                    - CategoryPath: {product.CategoryPaths[0]}
+                    - ImportedAt: {product.Data["ImportedAt"]}");
 
                 return product;
             });

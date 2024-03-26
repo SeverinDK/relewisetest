@@ -52,6 +52,8 @@ namespace RelewiseTest.Parsers
         {
             List<ProductDeserializationDTO> productDeserializationDTOs = JsonConvert.DeserializeObject<List<ProductDeserializationDTO>>(json) ?? throw new FormatException("Invalid JSON data");
 
+            double importTimestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
             List<Product> products = [];
 
             foreach (ProductDeserializationDTO deserializedProduct in productDeserializationDTOs)
@@ -75,7 +77,8 @@ namespace RelewiseTest.Parsers
                             { "Description", new Multilingual(new Language(language), deserializedProduct.Description) },
                             { "InStock", deserializedProduct.InStock == "in stock" },
                             { "Colors", new MultilingualCollection(language, [deserializedProduct.Color]) },
-                            { "PrimaryColor", new Multilingual(language, deserializedProduct.Color) }
+                            { "PrimaryColor", new Multilingual(language, deserializedProduct.Color) },
+                            { "ImportedAt", importTimestamp }
                         }
                     };
 
@@ -91,7 +94,8 @@ namespace RelewiseTest.Parsers
                         - Colors: {product.Data["Colors"]},
                         - PrimaryColor: {product.Data["PrimaryColor"]}
                         - InStock: {product.Data["InStock"]}
-                        - CategoryPath: {product.CategoryPaths[0]}");
+                        - CategoryPath: {product.CategoryPaths[0]}
+                        - ImportedAt: {product.Data["ImportedAt"]}");
                 } catch (Exception e) {
                     await warn($"Error parsing product {deserializedProduct.ProductId}: {e.Message}");
 

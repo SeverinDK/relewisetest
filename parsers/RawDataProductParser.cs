@@ -42,6 +42,8 @@ namespace RelewiseTest.Parsers
             // Split the raw data into lines and skip the first two lines (header)
             string[] lines = rawData.Split(Environment.NewLine).Skip(2).ToArray();
 
+            double importTimestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
             for (int i = 0; i < lines.Length; i++)
             {
                 try {
@@ -89,7 +91,8 @@ namespace RelewiseTest.Parsers
                             { "ShortDescription", new Multilingual(language, description) },
                             { "InStock", inStock == "Yes" },
                             { "Colors", new MultilingualCollection(language, [color]) },
-                            { "PrimaryColor", new Multilingual(language, color) }
+                            { "PrimaryColor", new Multilingual(language, color) },
+                            { "ImportedAt", importTimestamp }
                         }
                     };
 
@@ -105,7 +108,8 @@ namespace RelewiseTest.Parsers
                             - Colors: {product.Data["Colors"]}
                             - PrimaryColor: {product.Data["PrimaryColor"]}
                             - InStock: {product.Data["InStock"]}
-                            - CategoryPath: {product.CategoryPaths[0]}");
+                            - CategoryPath: {product.CategoryPaths[0]}
+                            - ImportedAt: {product.Data["ImportedAt"]}");
                 } catch (Exception e) {
                     await warn($"Error parsing product on line {i}: {e.Message}");
                     continue;
