@@ -44,6 +44,7 @@ namespace RelewiseTest.Parsers
                 string? id = item.Element(gNamespace + "id")?.Value;
                 string? brand = item.Element(gNamespace + "brand")?.Value;
                 string? title = item.Element("title")?.Value;
+                string? description = item.Element("description")?.Value;
                 string? salePrice = item.Element(gNamespace + "sale_price")?.Value;
                 string? listPrice = item.Element(gNamespace + "price")?.Value;
                 string? availability = item.Element(gNamespace + "availability")?.Value;
@@ -53,6 +54,7 @@ namespace RelewiseTest.Parsers
                 if (String.IsNullOrEmpty(id) ||
                     String.IsNullOrEmpty(brand) ||
                     String.IsNullOrEmpty(title) ||
+                    String.IsNullOrEmpty(description) ||
                     String.IsNullOrEmpty(salePrice) ||
                     String.IsNullOrEmpty(listPrice) ||
                     String.IsNullOrEmpty(availability) ||
@@ -79,19 +81,23 @@ namespace RelewiseTest.Parsers
                     ListPrice = new MultiCurrency(listPriceCurrency, CurrencyUtil.RemoveCurrency(listPrice)),
                     CategoryPaths = [new(categories)],
                         Data = new Dictionary<string, DataValue?>() {
+                            { "ShortDescription", new Multilingual(language, description)},
                             { "InStock", availability == "in stock" },
-                            { "Color", color }
+                            { "Colors", new MultilingualCollection(language, [color]) },
+                            { "PrimaryColor", new Multilingual(language, color) }
                         }
                 };
 
                 await info($@"Parsed product:
                     - Id: {product.Id},
-                    - Product: {product.DisplayName},
-                    - Brand: {product.Brand.DisplayName},
-                    - SalePrice: {product.SalesPrice},
+                    - Product: {product.DisplayName}
+                    - Description: {product.Data["ShortDescription"]}
+                    - Brand: {product.Brand.DisplayName}
+                    - SalePrice: {product.SalesPrice}
                     - ListPrice: {product.ListPrice},
-                    - Color: {product.Data["Color"]},
-                    - InStock: {product.Data["InStock"]},
+                    - Colors: {product.Data["Colors"]}
+                    - PrimaryColor: {product.Data["PrimaryColor"]}
+                    - InStock: {product.Data["InStock"]}
                     - CategoryPath: {product.CategoryPaths[0]}");
 
                 return product;

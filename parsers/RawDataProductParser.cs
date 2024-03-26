@@ -50,11 +50,13 @@ namespace RelewiseTest.Parsers
 
                     string id = data[0];
                     string productName = data[1];
-                    string brandName = data[5];
+                    string brandName = data[2];
                     string salesPrice = data[3];
                     string listPrice = data[4];
+                    string description = data[5];
                     string inStock = data[6];
                     string color = data[7];
+                    string categoryPath = data[8];
 
                     if (String.IsNullOrEmpty(id) ||
                         String.IsNullOrEmpty(productName) ||
@@ -72,7 +74,7 @@ namespace RelewiseTest.Parsers
                     string salesPriceCurrency = CurrencyUtil.ExtractCurrency(salesPrice);
                     string listPriceCurrency = CurrencyUtil.ExtractCurrency(listPrice);
                     string language = arguments.JobConfiguration["language"];
-                    CategoryNameAndId[] categories = CategoryUtil.SplitCategories(data[8])
+                    CategoryNameAndId[] categories = CategoryUtil.SplitCategories(categoryPath)
                         .Select(category => new CategoryNameAndId(category, new Multilingual(language, category)))
                         .ToArray();
 
@@ -84,8 +86,10 @@ namespace RelewiseTest.Parsers
                         ListPrice = new(listPriceCurrency, CurrencyUtil.RemoveCurrency(listPrice)),
                         CategoryPaths = [new(categories)],
                         Data = new Dictionary<string, DataValue?>() {
+                            { "ShortDescription", new Multilingual(language, description) },
                             { "InStock", inStock == "Yes" },
-                            { "Color", color }
+                            { "Colors", new MultilingualCollection(language, [color]) },
+                            { "PrimaryColor", new Multilingual(language, color) }
                         }
                     };
 
@@ -93,12 +97,14 @@ namespace RelewiseTest.Parsers
 
                     await info($@"Parsed product:
                             - Id: {product.Id},
-                            - Product: {product.DisplayName},
-                            - Brand: {product.Brand.DisplayName},
-                            - SalePrice: {product.SalesPrice},
-                            - ListPrice: {product.ListPrice},
-                            - Color: {product.Data["Color"]},
-                            - InStock: {product.Data["InStock"]},
+                            - Product: {product.DisplayName}
+                            - Description: {product.Data["ShortDescription"]}
+                            - Brand: {product.Brand.DisplayName}
+                            - SalePrice: {product.SalesPrice}
+                            - ListPrice: {product.ListPrice}
+                            - Colors: {product.Data["Colors"]}
+                            - PrimaryColor: {product.Data["PrimaryColor"]}
+                            - InStock: {product.Data["InStock"]}
                             - CategoryPath: {product.CategoryPaths[0]}");
                 } catch (Exception e) {
                     await warn($"Error parsing product on line {i}: {e.Message}");
