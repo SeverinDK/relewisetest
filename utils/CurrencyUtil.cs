@@ -5,7 +5,7 @@ namespace RelewiseTest.Utils
 {
     public static class CurrencyUtil
     {
-        private static readonly string currencySymbolPattern = @"\s*[$€£¥₹]\s*";
+        private static readonly string currencySymbolPattern = @"\s*\p{Sc}\s*";
         private static readonly string currencyIsoPattern = @"\s*[A-Z]{3}\s*";
 
         public static decimal RemoveCurrency(string input)
