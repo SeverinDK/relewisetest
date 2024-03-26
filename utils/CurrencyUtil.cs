@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace RelewiseTest.Utils
 {
-    public class CurrencyUtil
+    public static class CurrencyUtil
     {
         private static readonly string currencySymbolPattern = @"\s*[$€£¥₹]\s*";
         private static readonly string currencyIsoPattern = @"\s*[A-Z]{3}\s*";

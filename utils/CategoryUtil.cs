@@ -1,6 +1,6 @@
 namespace RelewiseTest.Utils
 {
-    public class CategoryUtil
+    public static class CategoryUtil
     {
         public static string[] SplitCategories(string input)
         {
