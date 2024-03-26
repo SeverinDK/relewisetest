@@ -33,30 +33,36 @@ As the application runs, it outputs detailed information for each product parsed
 
 INFO: Parsed product:
                     - Id: 94,
-                    - Product: en: eBook Reader,
-                    - Brand: Kindle,
-                    - SalePrice: USD: 99,99,
+                    - Product: en: eBook Reader
+                    - Description: Multilingual: en: E-Ink Display, Built-in Light
+                    - Brand: Kindle
+                    - SalePrice: USD: 99,99
                     - ListPrice: USD: 119,99,
-                    - Color: String: White,
-                    - InStock: Boolean: False,
+                    - Colors: MultilingualCollection: en: White
+                    - PrimaryColor: Multilingual: en: White
+                    - InStock: Boolean: False
                     - CategoryPath: en: Electronics/en: Computers/en: eBook Readers
 INFO: Parsed product:
                     - Id: 95,
-                    - Product: en: Wireless Gaming Mouse,
-                    - Brand: Logitech,
-                    - SalePrice: USD: 69,99,
+                    - Product: en: Wireless Gaming Mouse
+                    - Description: Multilingual: en: RGB Optical Gaming Mouse
+                    - Brand: Logitech
+                    - SalePrice: USD: 69,99
                     - ListPrice: USD: 79,99,
-                    - Color: String: Black,
-                    - InStock: Boolean: False,
+                    - Colors: MultilingualCollection: en: Black
+                    - PrimaryColor: Multilingual: en: Black
+                    - InStock: Boolean: False
                     - CategoryPath: en: Electronics/en: Computer Accessories
 INFO: Parsed product:
                     - Id: 100,
-                    - Product: en: Bluetooth Headset,
-                    - Brand: Plantronics,
-                    - SalePrice: USD: 79,99,
+                    - Product: en: Bluetooth Headset
+                    - Description: Multilingual: en: Wireless Noise Cancelling Headset
+                    - Brand: Plantronics
+                    - SalePrice: USD: 79,99
                     - ListPrice: USD: 89,99,
-                    - Color: String: Black,
-                    - InStock: Boolean: False,
+                    - Colors: MultilingualCollection: en: Black
+                    - PrimaryColor: Multilingual: en: Black
+                    - InStock: Boolean: False
                     - CategoryPath: en: Electronics/en: Audio/en: Headphones
 
 ...
