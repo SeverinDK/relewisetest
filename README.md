@@ -42,6 +42,7 @@ INFO: Parsed product:
                     - PrimaryColor: Multilingual: en: White
                     - InStock: Boolean: False
                     - CategoryPath: en: Electronics/en: Computers/en: eBook Readers
+                    - ImportedAt: Double: 1711468616392
 INFO: Parsed product:
                     - Id: 95,
                     - Product: en: Wireless Gaming Mouse
@@ -53,6 +54,7 @@ INFO: Parsed product:
                     - PrimaryColor: Multilingual: en: Black
                     - InStock: Boolean: False
                     - CategoryPath: en: Electronics/en: Computer Accessories
+                    - ImportedAt: Double: 1711468616392
 INFO: Parsed product:
                     - Id: 100,
                     - Product: en: Bluetooth Headset
@@ -64,11 +66,12 @@ INFO: Parsed product:
                     - PrimaryColor: Multilingual: en: Black
                     - InStock: Boolean: False
                     - CategoryPath: en: Electronics/en: Audio/en: Headphones
+                    - ImportedAt: Double: 1711468616392
 
 ...
 ```
 
-Each `INFO` message contains details about a single product, including its ID, name, brand, sales price, list price, and category path. This detailed output provides a clear insight into the parsing process and the data being processed.
+Each `INFO` message contains details about a single product, including its ID, name, description, brand, sales price, list price, colors, primary color, stock, category path, and and import timestamp. This detailed output provides a clear insight into the parsing process and the data being processed.
 
 After all products have been parsed, the application will print the results for each parser in the following format to summarize the total number of products parsed:
 
