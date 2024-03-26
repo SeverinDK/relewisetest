@@ -5,8 +5,8 @@ namespace RelewiseTest.Utils
 {
     public class CurrencyUtil
     {
-        private static readonly string currencySymbolPattern = @"[$€£¥₹]";
-        private static readonly string currencyIsoPattern = @"\b[A-Z]{3}\b";
+        private static readonly string currencySymbolPattern = @"\s*[$€£¥₹]\s*";
+        private static readonly string currencyIsoPattern = @"\s*[A-Z]{3}\s*";
 
         public static decimal RemoveCurrency(string input)
         {
@@ -28,13 +28,13 @@ namespace RelewiseTest.Utils
             Match symbolMatch = Regex.Match(input, currencySymbolPattern);
             if (symbolMatch.Success)
             {
-                return symbolMatch.Value;
+                return symbolMatch.Value.Trim();
             }
 
             Match isoMatch = Regex.Match(input, currencyIsoPattern);
             if (isoMatch.Success)
             {
-                return isoMatch.Value;
+                return isoMatch.Value.Trim();
             }
 
             return string.Empty;
