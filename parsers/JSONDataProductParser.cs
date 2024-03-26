@@ -57,7 +57,9 @@ namespace RelewiseTest.Parsers
                     string salesPriceCurrency = CurrencyUtil.ExtractCurrency(deserializedProduct.SalesPrice);
                     string listPriceCurrency = CurrencyUtil.ExtractCurrency(deserializedProduct.ListPrice);
                     string language = arguments.JobConfiguration["language"];
-                    CategoryNameAndId[] categories = CategoryUtil.SplitCategories(deserializedProduct.CategoryPath).Select(category => new CategoryNameAndId(category, new Multilingual(language, category))).ToArray();
+                    CategoryNameAndId[] categories = CategoryUtil.SplitCategories(deserializedProduct.CategoryPath)
+                        .Select(category => new CategoryNameAndId(category, new Multilingual(language, category)))
+                        .ToArray();
 
                     Product product = new(deserializedProduct.ProductId)
                     {
