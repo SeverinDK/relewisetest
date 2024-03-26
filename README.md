@@ -31,13 +31,33 @@ As the application runs, it outputs detailed information for each product parsed
 ```
 ...
 
-INFO: Parsed: Id: 93, Product: en: Wireless Surround Sound System, Brand: Sonos, SalesPrice: USD: 699,99, ListPrice: USD: 799,99, CategoryPath: en: Electronics/en: Audio/en: Speakers
-
-INFO: Parsed: Id: 94, Product: en: eBook Reader, Brand: Kindle, SalesPrice: USD: 99,99, ListPrice: USD: 119,99, CategoryPath: en: Electronics/en: Computers/en: eBook Readers
-
-INFO: Parsed: Id: 95, Product: en: Wireless Gaming Mouse, Brand: Logitech, SalesPrice: USD: 69,99, ListPrice: USD: 79,99, CategoryPath: en: Electronics/en: Computer Accessories
-
-INFO: Parsed: Id: 100, Product: en: Bluetooth Headset, Brand: Plantronics, SalesPrice: USD: 79,99, ListPrice: USD: 89,99, CategoryPath: en: Electronics/en: Audio/en: Headphones
+INFO: Parsed product:
+                    - Id: 94,
+                    - Product: en: eBook Reader,
+                    - Brand: Kindle,
+                    - SalePrice: USD: 99,99,
+                    - ListPrice: USD: 119,99,
+                    - Color: String: White,
+                    - InStock: Boolean: False,
+                    - CategoryPath: en: Electronics/en: Computers/en: eBook Readers
+INFO: Parsed product:
+                    - Id: 95,
+                    - Product: en: Wireless Gaming Mouse,
+                    - Brand: Logitech,
+                    - SalePrice: USD: 69,99,
+                    - ListPrice: USD: 79,99,
+                    - Color: String: Black,
+                    - InStock: Boolean: False,
+                    - CategoryPath: en: Electronics/en: Computer Accessories
+INFO: Parsed product:
+                    - Id: 100,
+                    - Product: en: Bluetooth Headset,
+                    - Brand: Plantronics,
+                    - SalePrice: USD: 79,99,
+                    - ListPrice: USD: 89,99,
+                    - Color: String: Black,
+                    - InStock: Boolean: False,
+                    - CategoryPath: en: Electronics/en: Audio/en: Headphones
 
 ...
 ```
