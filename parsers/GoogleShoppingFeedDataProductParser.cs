@@ -40,19 +40,23 @@ namespace RelewiseTest.Parsers
             XNamespace gNamespace = "http://base.google.com/ns/1.0";
             IEnumerable<XElement>? items = XDocument.Parse(xml)?.Root?.Element("channel")?.Elements("item") ?? throw new FormatException("Invalid XML data");
 
-            IEnumerable<Task<Product?>> tasks = items.Select(async product => {
-                string? id = product.Element(gNamespace + "id")?.Value;
-                string? brand = product.Element(gNamespace + "brand")?.Value;
-                string? title = product.Element("title")?.Value;
-                string? salePrice = product.Element(gNamespace + "sale_price")?.Value;
-                string? listPrice = product.Element(gNamespace + "price")?.Value;
-                string? categoryPath = product.Element(gNamespace + "product_type")?.Value;
+            IEnumerable<Task<Product?>> tasks = items.Select(async item => {
+                string? id = item.Element(gNamespace + "id")?.Value;
+                string? brand = item.Element(gNamespace + "brand")?.Value;
+                string? title = item.Element("title")?.Value;
+                string? salePrice = item.Element(gNamespace + "sale_price")?.Value;
+                string? listPrice = item.Element(gNamespace + "price")?.Value;
+                string? availability = item.Element(gNamespace + "availability")?.Value;
+                string? color = item.Element(gNamespace + "color")?.Value;
+                string? categoryPath = item.Element(gNamespace + "product_type")?.Value;
 
                 if (String.IsNullOrEmpty(id) ||
                     String.IsNullOrEmpty(brand) ||
                     String.IsNullOrEmpty(title) ||
                     String.IsNullOrEmpty(salePrice) ||
                     String.IsNullOrEmpty(listPrice) ||
+                    String.IsNullOrEmpty(availability) ||
+                    String.IsNullOrEmpty(color) ||
                     String.IsNullOrEmpty(categoryPath))
                 {
                     await warn($"Skipping product {id} with missing data");
@@ -67,18 +71,30 @@ namespace RelewiseTest.Parsers
                     .Select(category => new CategoryNameAndId(category, new Multilingual(language, category)))
                     .ToArray();
 
-                Product newProduct = new(id)
+                Product product = new(id)
                 {
                     DisplayName = new Multilingual(new Language(language), title),
                     Brand = new Brand("fake-brand-id") { DisplayName = brand },
                     SalesPrice = new MultiCurrency(salesPriceCurrency, CurrencyUtil.RemoveCurrency(salePrice)),
                     ListPrice = new MultiCurrency(listPriceCurrency, CurrencyUtil.RemoveCurrency(listPrice)),
-                    CategoryPaths = [new(categories)]
+                    CategoryPaths = [new(categories)],
+                        Data = new Dictionary<string, DataValue?>() {
+                            { "InStock", availability == "in stock" },
+                            { "Color", color }
+                        }
                 };
 
-                await info($"Parsed: Id: {newProduct.Id}, Product: {newProduct.DisplayName}, Brand: {newProduct.Brand.DisplayName}, SalesPrice: {newProduct.SalesPrice}, ListPrice: {newProduct.ListPrice}, CategoryPath: {newProduct.CategoryPaths[0]}\n");
+                await info($@"Parsed product:
+                    - Id: {product.Id},
+                    - Product: {product.DisplayName},
+                    - Brand: {product.Brand.DisplayName},
+                    - SalePrice: {product.SalesPrice},
+                    - ListPrice: {product.ListPrice},
+                    - Color: {product.Data["Color"]},
+                    - InStock: {product.Data["InStock"]},
+                    - CategoryPath: {product.CategoryPaths[0]}");
 
-                return newProduct;
+                return product;
             });
 
             Product?[] products = await Task.WhenAll(tasks);

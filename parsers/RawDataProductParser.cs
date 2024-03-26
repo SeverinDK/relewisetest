@@ -53,12 +53,16 @@ namespace RelewiseTest.Parsers
                     string brandName = data[5];
                     string salesPrice = data[3];
                     string listPrice = data[4];
+                    string inStock = data[6];
+                    string color = data[7];
 
                     if (String.IsNullOrEmpty(id) ||
                         String.IsNullOrEmpty(productName) ||
                         String.IsNullOrEmpty(brandName) ||
                         String.IsNullOrEmpty(salesPrice) ||
-                        String.IsNullOrEmpty(listPrice))
+                        String.IsNullOrEmpty(listPrice) ||
+                        String.IsNullOrEmpty(inStock) ||
+                        String.IsNullOrEmpty(color))
                     {
                         await warn($"Skipping product {id} with missing data");
 
@@ -78,12 +82,24 @@ namespace RelewiseTest.Parsers
                         Brand = new Brand("fake-brand-id") { DisplayName = brandName },
                         SalesPrice = new(salesPriceCurrency, CurrencyUtil.RemoveCurrency(salesPrice)),
                         ListPrice = new(listPriceCurrency, CurrencyUtil.RemoveCurrency(listPrice)),
-                        CategoryPaths = [new(categories)]
+                        CategoryPaths = [new(categories)],
+                        Data = new Dictionary<string, DataValue?>() {
+                            { "InStock", inStock == "Yes" },
+                            { "Color", color }
+                        }
                     };
 
                     products.Add(product);
 
-                    await info($"Parsed product: Id: {product.Id}, Product: {product.DisplayName}, Brand: {product.Brand.DisplayName}, SalePrice: {product.SalesPrice}, ListPrice: {product.ListPrice}, CategoryPath: {product.CategoryPaths[0]}\n");
+                    await info($@"Parsed product:
+                            - Id: {product.Id},
+                            - Product: {product.DisplayName},
+                            - Brand: {product.Brand.DisplayName},
+                            - SalePrice: {product.SalesPrice},
+                            - ListPrice: {product.ListPrice},
+                            - Color: {product.Data["Color"]},
+                            - InStock: {product.Data["InStock"]},
+                            - CategoryPath: {product.CategoryPaths[0]}");
                 } catch (Exception e) {
                     await warn($"Error parsing product on line {i}: {e.Message}");
                     continue;

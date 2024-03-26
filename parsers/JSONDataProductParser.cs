@@ -4,13 +4,15 @@ using RelewiseTest.Utils;
 
 namespace RelewiseTest.Parsers
 {
-    class ProductDeserializationDTO(string productId, string productName, string brandName, string salesPrice, string listPrice, string category)
+    class ProductDeserializationDTO(string productId, string productName, string brandName, string salesPrice, string listPrice, string category, string inStock, string color)
     {
         public string ProductId { get; } = productId;
         public string ProductName { get; } = productName;
         public string BrandName { get; } = brandName;
         public string SalesPrice { get; } = salesPrice;
         public string ListPrice { get; } = listPrice;
+        public string InStock { get; } = inStock;
+        public string Color { get; } = color;
         public string CategoryPath { get; } = category;
     }
 
@@ -67,12 +69,24 @@ namespace RelewiseTest.Parsers
                         Brand = new Brand("fake-brand-id") { DisplayName = deserializedProduct.BrandName },
                         SalesPrice = new(salesPriceCurrency, CurrencyUtil.RemoveCurrency(deserializedProduct.SalesPrice)),
                         ListPrice = new(listPriceCurrency, CurrencyUtil.RemoveCurrency(deserializedProduct.ListPrice)),
-                        CategoryPaths = [new(categories)]
+                        CategoryPaths = [new(categories)],
+                        Data = new Dictionary<string, DataValue?>() {
+                            { "InStock", deserializedProduct.InStock == "in stock" },
+                            { "Color", deserializedProduct.Color }
+                        }
                     };
 
                     products.Add(product);
 
-                    await info($"Parsed product: Id: {product.Id}, Product: {product.DisplayName}, Brand: {product.Brand.DisplayName}, SalePrice: {product.SalesPrice}, ListPrice: {product.ListPrice}, CategoryPath: {product.CategoryPaths[0]}\n");
+                    await info($@"Parsed product:
+                        - Id: {product.Id},
+                        - Product: {product.DisplayName},
+                        - Brand: {product.Brand.DisplayName},
+                        - SalePrice: {product.SalesPrice},
+                        - ListPrice: {product.ListPrice},
+                        - Color: {product.Data["Color"]},
+                        - InStock: {product.Data["InStock"]},
+                        - CategoryPath: {product.CategoryPaths[0]}");
                 } catch (Exception e) {
                     await warn($"Error parsing product {deserializedProduct.ProductId}: {e.Message}");
 
