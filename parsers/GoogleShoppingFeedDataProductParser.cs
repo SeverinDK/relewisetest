@@ -91,7 +91,7 @@ namespace RelewiseTest.Parsers
                         }
                 };
 
-                await info(ProductUtil.Dump(product));
+                await info(ProductUtil.SerializeProductDetails(product));
 
                 return product;
             });

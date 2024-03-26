@@ -4,7 +4,7 @@ namespace RelewiseTest.Utils
 {
     public static class ProductUtil
     {
-        public static string Dump(Product product)
+        public static string SerializeProductDetails(Product product)
         {
             var description = product.Data?.TryGetValue("ShortDescription", out var descValue) == true ? descValue!.ToString() : "N/A";
             var colors = product.Data?.TryGetValue("Colors", out var colorsValue) == true ? colorsValue!.ToString() : "N/A";

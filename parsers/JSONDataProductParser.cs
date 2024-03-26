@@ -98,7 +98,7 @@ namespace RelewiseTest.Parsers
 
                     products.Add(product);
 
-                    await info(ProductUtil.Dump(product));
+                    await info(ProductUtil.SerializeProductDetails(product));
                 } catch (Exception e) {
                     await warn($"Error parsing product {deserializedProduct.ProductId}: {e.Message}");
 
