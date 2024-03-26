@@ -1,4 +1,5 @@
-﻿using RelewiseTest.Parsers;
+﻿using Relewise.Parsers;
+using RelewiseTest.Parsers;
 
 namespace RelewiseTest
 {
@@ -6,96 +7,59 @@ namespace RelewiseTest
     {
         static async Task Main(string[] args)
         {
-            string rawProductData = await ParseRawData();
-            string JSONProductData = await ParseJSONData();
-            string googleShoppingFeedData = await ParseGoogleShoppingFeedXML();
+            var rawData = await ParseData(ParserType.RawData, new Dictionary<string, string>
+            {
+                { "url", "https://cdn.relewise.com/academy/productdata/raw" },
+                { "language", "en" }
+            }, "NO-NEED-4-API-KEY");
 
-            Console.WriteLine("----------------------------------------");
-            Console.WriteLine($"RawData product count: {rawProductData}");
-            Console.WriteLine("----------------------------------------\n");
+            var jsonData = await ParseData(ParserType.JSONData, new Dictionary<string, string>
+            {
+                { "url", "https://cdn.relewise.com/academy/productdata/customjsonfeed" },
+                { "language", "en" }
+            }, "NO-NEED-4-API-KEY");
 
-            Console.WriteLine("----------------------------------------");
-            Console.WriteLine($"JSON product count: {JSONProductData}");
-            Console.WriteLine("----------------------------------------\n");
+            var googleShoppingFeedData = await ParseData(ParserType.GoogleShoppingFeed, new Dictionary<string, string>
+            {
+                { "url", "https://cdn.relewise.com/academy/productdata/googleshoppingfeed" },
+                { "language", "en" }
+            }, "NO-NEED-4-API-KEY");
 
-            Console.WriteLine("----------------------------------------");
-            Console.WriteLine($"GoogleShoppingFeed XML product count: {googleShoppingFeedData}");
-            Console.WriteLine("----------------------------------------\n");
+            PrintResult("RawData", rawData);
+            PrintResult("JSONData", jsonData);
+            PrintResult("GoogleShoppingFeed", googleShoppingFeedData);
         }
 
-        private static async Task<string> ParseRawData()
+        private static async Task<string> ParseData(ParserType parserType, Dictionary<string, string> jobConfiguration, string apiKey)
         {
-            RawDataProductParser parser = new();
+            IJob parser = ProductParserFactory.CreateParser(parserType);
+
+            var parserTypeName = parserType.ToString();
+            var jobArguments = new JobArguments(
+                Guid.NewGuid(),
+                apiKey,
+                jobConfiguration);
 
             return await parser.Execute(
-                new JobArguments(
-                    Guid.NewGuid(),
-                    "NO-NEED-4-API-KEY",
-                    new Dictionary<string, string>{
-                        { "url", "https://cdn.relewise.com/academy/productdata/raw" },
-                        { "language", "EN" }
-                    }),
+                jobArguments,
                 message =>
-                    {
-                        Console.WriteLine($"INFO: {message}");
-                        return Task.CompletedTask;
-                    },
+                {
+                    Console.WriteLine($"INFO: {message}");
+                    return Task.CompletedTask;
+                },
                 message =>
-                    {
-                        Console.WriteLine($"WARNING: {message}");
-                        return Task.CompletedTask;
-                    },
+                {
+                    Console.WriteLine($"WARNING: {message}");
+                    return Task.CompletedTask;
+                },
                 CancellationToken.None);
         }
 
-        private static async Task<string> ParseJSONData()
+        private static void PrintResult(string dataType, string data)
         {
-            JSONDataProductParser job = new();
-
-            return await job.Execute(
-                new JobArguments(
-                    Guid.NewGuid(),
-                    "NO-NEED-4-API-KEY",
-                    new Dictionary<string, string>{
-                        { "url", "https://cdn.relewise.com/academy/productdata/customjsonfeed" },
-                        { "language", "EN" }
-                    }),
-                message =>
-                    {
-                        Console.WriteLine($"INFO: {message}");
-                        return Task.CompletedTask;
-                    },
-                message =>
-                    {
-                        Console.WriteLine($"WARNING: {message}");
-                        return Task.CompletedTask;
-                    },
-                CancellationToken.None);
-        }
-
-        private static async Task<string> ParseGoogleShoppingFeedXML()
-        {
-            GoogleShoppingFeedDataProductParser job = new();
-
-            return await job.Execute(
-                new JobArguments(
-                    Guid.NewGuid(),
-                    "NO-NEED-4-API-KEY",
-                    new Dictionary<string, string>{
-                        { "url", "https://cdn.relewise.com/academy/productdata/googleshoppingfeed" },
-                        { "language", "EN" }
-                    }),
-                message =>
-                    {
-                        Console.WriteLine($"INFO: {message}");
-                        return Task.CompletedTask;
-                    },
-                message =>
-                    {
-                        Console.WriteLine($"WARNING: {message}");
-                        return Task.CompletedTask;
-                    },
-                CancellationToken.None);
+            Console.WriteLine("----------------------------------------");
+            Console.WriteLine($"{dataType} product count: {data}");
+            Console.WriteLine("----------------------------------------\n");
         }
     }
 }
