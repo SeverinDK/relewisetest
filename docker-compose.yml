@@ -6,3 +6,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    environment:
+      - PRODUCT_DATA_RAW=https://cdn.relewise.com/academy/productdata/raw
+      - PRODUCT_DATA_RAW_KEY=NO_NEED_4_A_KEY
+      - PRODUCT_DATA_CUSTON_JSON_FEED=https://cdn.relewise.com/academy/productdata/customjsonfeed
+      - PRODUCT_DATA_CUSTON_JSON_FEED_KEY=NO_NEED_4_A_KEY
+      - PRODUCT_DATA_GOOGLE_SHOPPING_FEED=https://cdn.relewise.com/academy/productdata/googleshoppingfeed
+      - PRODUCT_DATA_GOOGLE_SHOPPING_FEED_KEY=NO_NEED_4_A_KEY

@@ -7,27 +7,63 @@ namespace RelewiseTest
     {
         static async Task Main(string[] args)
         {
-            string rawData = await ParseData(ParserType.RawData, new Dictionary<string, string>
-            {
-                { "url", "https://cdn.relewise.com/academy/productdata/raw" },
-                { "language", "en" }
-            }, "NO-NEED-4-API-KEY");
+            string rawData = await ParseRawData();
+            string jsonData = await ParseCustomJSONFeedData();
+            string googleShoppingFeedData = await ParseGoogleShoppingFeedData();
 
-            string jsonData = await ParseData(ParserType.JSONData, new Dictionary<string, string>
-            {
-                { "url", "https://cdn.relewise.com/academy/productdata/customjsonfeed" },
-                { "language", "en" }
-            }, "NO-NEED-4-API-KEY");
+            PrintResult(ParserType.RawData, rawData);
+            PrintResult(ParserType.JSONData, jsonData);
+            PrintResult(ParserType.GoogleShoppingFeed, googleShoppingFeedData);
+        }
 
-            string googleShoppingFeedData = await ParseData(ParserType.GoogleShoppingFeed, new Dictionary<string, string>
+        private static async Task<string> ParseRawData()
+        {
+            string url = GetEnvironmentVariable("PRODUCT_DATA_RAW");
+            string key = GetEnvironmentVariable("PRODUCT_DATA_RAW_KEY");
+            Dictionary<string, string> jobConfiguration = new()
             {
-                { "url", "https://cdn.relewise.com/academy/productdata/googleshoppingfeed" },
+                { "url", url },
                 { "language", "en" }
-            }, "NO-NEED-4-API-KEY");
+            };
 
-            PrintResult("RawData", rawData);
-            PrintResult("JSONData", jsonData);
-            PrintResult("GoogleShoppingFeed", googleShoppingFeedData);
+            return await ParseData(ParserType.RawData, jobConfiguration, key);
+        }
+
+        private async static Task<string> ParseCustomJSONFeedData()
+        {
+            string url = GetEnvironmentVariable("PRODUCT_DATA_CUSTON_JSON_FEED");
+            string key = GetEnvironmentVariable("PRODUCT_DATA_CUSTON_JSON_FEED_KEY");
+            Dictionary<string, string> jobConfiguration = new()
+            {
+                { "url", url },
+                { "language", "en" }
+            };
+
+            return await ParseData(ParserType.JSONData, jobConfiguration, key);
+        }
+
+        private async static Task<string> ParseGoogleShoppingFeedData()
+        {
+            string url = GetEnvironmentVariable("PRODUCT_DATA_GOOGLE_SHOPPING_FEED");
+            string key = GetEnvironmentVariable("PRODUCT_DATA_GOOGLE_SHOPPING_FEED_KEY");
+            Dictionary<string, string> jobConfiguration = new()
+            {
+                { "url", url },
+                { "language", "en" }
+            };
+
+            return await ParseData(ParserType.GoogleShoppingFeed, jobConfiguration, key);
+        }
+
+        private static string GetEnvironmentVariable(string name)
+        {
+            string? value = Environment.GetEnvironmentVariable(name);
+            if (string.IsNullOrEmpty(value))
+            {
+                throw new Exception($"{name} environment variable is not set.");
+            }
+
+            return value;
         }
 
         private static async Task<string> ParseData(ParserType parserType, Dictionary<string, string> jobConfiguration, string apiKey)
@@ -55,10 +91,10 @@ namespace RelewiseTest
                 CancellationToken.None);
         }
 
-        private static void PrintResult(string dataType, string data)
+        private static void PrintResult(ParserType type, string count)
         {
             Console.WriteLine("----------------------------------------");
-            Console.WriteLine($"{dataType} product count: {data}");
+            Console.WriteLine($"{type} product count: {count}");
             Console.WriteLine("----------------------------------------\n");
         }
     }
