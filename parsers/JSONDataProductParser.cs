@@ -88,7 +88,7 @@ namespace RelewiseTest.Parsers
                         ListPrice = new(listPriceCurrency, CurrencyUtil.RemoveCurrency(deserializedProduct.ListPrice)),
                         CategoryPaths = [new(categories)],
                         Data = new Dictionary<string, DataValue?>() {
-                            { "Description", new Multilingual(new Language(language), deserializedProduct.Description) },
+                            { "ShortDescription", new Multilingual(new Language(language), deserializedProduct.Description) },
                             { "InStock", deserializedProduct.InStock == "in stock" },
                             { "Colors", new MultilingualCollection(language, [deserializedProduct.Color]) },
                             { "PrimaryColor", new Multilingual(language, deserializedProduct.Color) },
@@ -98,18 +98,7 @@ namespace RelewiseTest.Parsers
 
                     products.Add(product);
 
-                    await info($@"Parsed product:
-                        - Id: {product.Id},
-                        - Product: {product.DisplayName}
-                        - Description: {product.Data["Description"]}
-                        - Brand: {product.Brand.DisplayName}
-                        - SalePrice: {product.SalesPrice}
-                        - ListPrice: {product.ListPrice}
-                        - Colors: {product.Data["Colors"]},
-                        - PrimaryColor: {product.Data["PrimaryColor"]}
-                        - InStock: {product.Data["InStock"]}
-                        - CategoryPath: {product.CategoryPaths[0]}
-                        - ImportedAt: {product.Data["ImportedAt"]}");
+                    await info(ProductUtil.Dump(product));
                 } catch (Exception e) {
                     await warn($"Error parsing product {deserializedProduct.ProductId}: {e.Message}");
 
