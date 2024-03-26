@@ -82,10 +82,10 @@ This output provides a clear understanding of how many products were parsed usin
 ## Project Structure
 
 - `Program.cs`: The main entry point of the application.
-- `IJob.cs`: Interface for product parsers.
-- `ProductParserFactory.cs`: Factory class for creating parser instances.
-- `RawDataProductParser.cs`, `JSONDataProductParser.cs`, `GoogleShoppingFeedDataProductParser.cs`: Parser implementations.
 - `Dockerfile` and `docker-compose.yml`: Configuration files for Docker.
+- `Parsers/IJob.cs`: Interface for product parsers.
+- `Parsers/ProductParserFactory.cs`: Factory class for creating parser instances.
+- `Parsers/RawDataProductParser.cs`, `JSONDataProductParser.cs`, `GoogleShoppingFeedDataProductParser.cs`: Parser implementations.
 - `Utils/CategoryUtil.cs`: Utility class for processing category strings. It provides functionality to normalize and split category strings based on a specified delimiter. This is useful for parsing hierarchical category data that may come in various string formats.
 - `Utils/CurrencyUtil.cs`: Utility class for handling currency data within strings. It includes methods to remove currency symbols or ISO currency codes from price strings and convert them to a numeric format, as well as to extract the currency symbol or code from a given string. This class is essential for processing product prices that are presented in a string format with varying currency indicators.
 
