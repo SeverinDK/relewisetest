@@ -34,8 +34,8 @@ namespace RelewiseTest
         {
             IJob parser = ProductParserFactory.CreateParser(parserType);
 
-            var parserTypeName = parserType.ToString();
-            var jobArguments = new JobArguments(
+            string parserTypeName = parserType.ToString();
+            JobArguments jobArguments = new(
                 Guid.NewGuid(),
                 apiKey,
                 jobConfiguration);

@@ -40,7 +40,7 @@ namespace RelewiseTest.Parsers
             XNamespace gNamespace = "http://base.google.com/ns/1.0";
             IEnumerable<XElement>? items = XDocument.Parse(xml)?.Root?.Element("channel")?.Elements("item") ?? throw new FormatException("Invalid XML data");
 
-            var tasks = items.Select(async product => {
+            IEnumerable<Task<Product?>> tasks = items.Select(async product => {
                 string? id = product.Element(gNamespace + "id")?.Value;
                 string? brand = product.Element(gNamespace + "brand")?.Value;
                 string? title = product.Element("title")?.Value;
@@ -79,7 +79,7 @@ namespace RelewiseTest.Parsers
                 return newProduct;
             });
 
-            var products = await Task.WhenAll(tasks);
+            Product?[] products = await Task.WhenAll(tasks);
             return products.Where(product => product != null).ToList()!;
         }
     }

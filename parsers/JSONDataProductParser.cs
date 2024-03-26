@@ -51,7 +51,7 @@ namespace RelewiseTest.Parsers
 
             List<Product> products = [];
 
-            foreach (var deserializedProduct in productDeserializationDTOs)
+            foreach (ProductDeserializationDTO deserializedProduct in productDeserializationDTOs)
             {
                 try {
                     string salesPriceCurrency = CurrencyUtil.ExtractCurrency(deserializedProduct.SalesPrice);
@@ -72,7 +72,7 @@ namespace RelewiseTest.Parsers
 
                     await info($"Parsed product: Id: {product.Id}, Product: {product.DisplayName}, Brand: {product.Brand.DisplayName}, SalePrice: {product.SalesPrice}, ListPrice: {product.ListPrice}, CategoryPath: {product.CategoryPaths[0]}\n");
                 } catch (Exception e) {
-                    await warn($"Error parsing product: {e.Message}");
+                    await warn($"Error parsing product {deserializedProduct.ProductId}: {e.Message}");
 
                     continue;
                 }
