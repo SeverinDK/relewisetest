@@ -7,19 +7,19 @@ namespace RelewiseTest
     {
         static async Task Main(string[] args)
         {
-            var rawData = await ParseData(ParserType.RawData, new Dictionary<string, string>
+            string rawData = await ParseData(ParserType.RawData, new Dictionary<string, string>
             {
                 { "url", "https://cdn.relewise.com/academy/productdata/raw" },
                 { "language", "en" }
             }, "NO-NEED-4-API-KEY");
 
-            var jsonData = await ParseData(ParserType.JSONData, new Dictionary<string, string>
+            string jsonData = await ParseData(ParserType.JSONData, new Dictionary<string, string>
             {
                 { "url", "https://cdn.relewise.com/academy/productdata/customjsonfeed" },
                 { "language", "en" }
             }, "NO-NEED-4-API-KEY");
 
-            var googleShoppingFeedData = await ParseData(ParserType.GoogleShoppingFeed, new Dictionary<string, string>
+            string googleShoppingFeedData = await ParseData(ParserType.GoogleShoppingFeed, new Dictionary<string, string>
             {
                 { "url", "https://cdn.relewise.com/academy/productdata/googleshoppingfeed" },
                 { "language", "en" }
