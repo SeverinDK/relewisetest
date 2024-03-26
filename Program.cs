@@ -5,15 +5,20 @@ namespace RelewiseTest
 {
     public class Program
     {
+        record ParsedData(string RawData, string JsonData, string GoogleShoppingFeedData);
+
         static async Task Main(string[] args)
         {
-            string rawData = await ParseRawData();
-            string jsonData = await ParseCustomJSONFeedData();
-            string googleShoppingFeedData = await ParseGoogleShoppingFeedData();
+            Task<string> rawDataTask = ParseRawData();
+            Task<string> jsonDataTask = ParseCustomJSONFeedData();
+            Task<string> googleShoppingFeedDataTask = ParseGoogleShoppingFeedData();
 
-            PrintResult(ParserType.RawData, rawData);
-            PrintResult(ParserType.JSONData, jsonData);
-            PrintResult(ParserType.GoogleShoppingFeed, googleShoppingFeedData);
+            string[] results = await Task.WhenAll(rawDataTask, jsonDataTask, googleShoppingFeedDataTask);
+            ParsedData parsedData = new(results[0], results[1], results[2]);
+
+            PrintResult(ParserType.RawData, parsedData.RawData);
+            PrintResult(ParserType.JSONData, parsedData.JsonData);
+            PrintResult(ParserType.GoogleShoppingFeed, parsedData.GoogleShoppingFeedData);
         }
 
         private static async Task<string> ParseRawData()

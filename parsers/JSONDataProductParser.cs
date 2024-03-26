@@ -4,17 +4,31 @@ using RelewiseTest.Utils;
 
 namespace RelewiseTest.Parsers
 {
-    class ProductDeserializationDTO(string productId, string productName, string shortDescription, string brandName, string salesPrice, string listPrice, string category, string inStock, string color)
+    record DeserializedProduct
     {
-        public string ProductId { get; } = productId;
-        public string ProductName { get; } = productName;
-        public string Description { get; } = shortDescription;
-        public string BrandName { get; } = brandName;
-        public string SalesPrice { get; } = salesPrice;
-        public string ListPrice { get; } = listPrice;
-        public string InStock { get; } = inStock;
-        public string Color { get; } = color;
-        public string CategoryPath { get; } = category;
+        [JsonConstructor]
+        public DeserializedProduct(string productId, string productName, string shortDescription, string brandName, string salesPrice, string listPrice, string category, string inStock, string color)
+        {
+            ProductId = productId;
+            ProductName = productName;
+            Description = shortDescription;
+            BrandName = brandName;
+            SalesPrice = salesPrice;
+            ListPrice = listPrice;
+            CategoryPath = category;
+            InStock = inStock;
+            Color = color;
+        }
+
+        public string ProductId { get; }
+        public string ProductName { get; }
+        public string Description { get; }
+        public string BrandName { get; }
+        public string SalesPrice { get; }
+        public string ListPrice { get; }
+        public string InStock { get; }
+        public string Color { get; }
+        public string CategoryPath { get; }
     }
 
     public class JSONDataProductParser : IJob
@@ -50,13 +64,13 @@ namespace RelewiseTest.Parsers
 
         private async static Task<List<Product>> ParseData(string json, JobArguments arguments, Func<string, Task> info, Func<string, Task> warn)
         {
-            List<ProductDeserializationDTO> productDeserializationDTOs = JsonConvert.DeserializeObject<List<ProductDeserializationDTO>>(json) ?? throw new FormatException("Invalid JSON data");
+            List<DeserializedProduct> deserializedProducts = JsonConvert.DeserializeObject<List<DeserializedProduct>>(json) ?? throw new FormatException("Invalid JSON data");
 
             double importTimestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
             List<Product> products = [];
 
-            foreach (ProductDeserializationDTO deserializedProduct in productDeserializationDTOs)
+            foreach (DeserializedProduct deserializedProduct in deserializedProducts)
             {
                 try {
                     string salesPriceCurrency = CurrencyUtil.ExtractCurrency(deserializedProduct.SalesPrice);
