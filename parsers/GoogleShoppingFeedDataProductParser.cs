@@ -42,58 +42,40 @@ namespace RelewiseTest.Parsers
 
 	        double importTimestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
-            IEnumerable<Task<Product?>> tasks = items.Select(async item => {
-                string? id = item.Element(gNamespace + "id")?.Value;
-                string? brand = item.Element(gNamespace + "brand")?.Value;
-                string? title = item.Element("title")?.Value;
-                string? description = item.Element("description")?.Value;
-                string? salePrice = item.Element(gNamespace + "sale_price")?.Value;
-                string? listPrice = item.Element(gNamespace + "price")?.Value;
-                string? availability = item.Element(gNamespace + "availability")?.Value;
-                string? color = item.Element(gNamespace + "color")?.Value;
-                string? categoryPath = item.Element(gNamespace + "product_type")?.Value;
 
-                if (String.IsNullOrEmpty(id) ||
-                    String.IsNullOrEmpty(brand) ||
-                    String.IsNullOrEmpty(title) ||
-                    String.IsNullOrEmpty(description) ||
-                    String.IsNullOrEmpty(salePrice) ||
-                    String.IsNullOrEmpty(listPrice) ||
-                    String.IsNullOrEmpty(availability) ||
-                    String.IsNullOrEmpty(color) ||
-                    String.IsNullOrEmpty(categoryPath))
-                {
-                    await warn($"Skipping product {id} with missing data");
+            IEnumerable<Task<Product?>> tasks = items.Select(async item => {
+                try {
+                    string? id = item.Element(gNamespace + "id")?.Value;
+                    string? brand = item.Element(gNamespace + "brand")?.Value;
+                    string? title = item.Element("title")?.Value;
+                    string? description = item.Element("description")?.Value;
+                    string? salePrice = item.Element(gNamespace + "sale_price")?.Value;
+                    string? listPrice = item.Element(gNamespace + "price")?.Value;
+                    string? availability = item.Element(gNamespace + "availability")?.Value;
+                    string? color = item.Element(gNamespace + "color")?.Value;
+                    string? categoryPath = item.Element(gNamespace + "product_type")?.Value;
+
+                    ProductRecord productRecord = new(
+                        id,
+                        title,
+                        description,
+                        brand,
+                        salePrice,
+                        listPrice,
+                        categoryPath,
+                        availability,
+                        color);
+
+                    Product product = productRecord.MakeProduct(new Language(arguments.JobConfiguration["language"]), importTimestamp);
+
+                    await info(ProductUtil.SerializeProductDetails(product));
+
+                    return product;
+                } catch (Exception e) {
+                    await warn($"Error parsing product {item.Element(gNamespace + "id")?.Value}: {e.Message}");
 
                     return null;
                 }
-
-                string salesPriceCurrency = CurrencyUtil.ExtractCurrency(salePrice);
-                string listPriceCurrency = CurrencyUtil.ExtractCurrency(listPrice);
-                string language = arguments.JobConfiguration["language"];
-                CategoryNameAndId[] categories = CategoryUtil.SplitCategories(categoryPath)
-                    .Select(category => new CategoryNameAndId(category, new Multilingual(language, category)))
-                    .ToArray();
-
-                Product product = new(id)
-                {
-                    DisplayName = new Multilingual(new Language(language), title),
-                    Brand = new Brand("fake-brand-id") { DisplayName = brand },
-                    SalesPrice = new MultiCurrency(salesPriceCurrency, CurrencyUtil.RemoveCurrency(salePrice)),
-                    ListPrice = new MultiCurrency(listPriceCurrency, CurrencyUtil.RemoveCurrency(listPrice)),
-                    CategoryPaths = [new(categories)],
-                        Data = new Dictionary<string, DataValue?>() {
-                            { "ShortDescription", new Multilingual(language, description)},
-                            { "InStock", availability == "in stock" },
-                            { "Colors", new MultilingualCollection(language, [color]) },
-                            { "PrimaryColor", new Multilingual(language, color) },
-                            { "ImportedAt", importTimestamp }
-                        }
-                };
-
-                await info(ProductUtil.SerializeProductDetails(product));
-
-                return product;
             });
 
             Product?[] products = await Task.WhenAll(tasks);

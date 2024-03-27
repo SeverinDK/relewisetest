@@ -60,43 +60,18 @@ namespace RelewiseTest.Parsers
                     string color = data[7];
                     string categoryPath = data[8];
 
-                    if (String.IsNullOrEmpty(id) ||
-                        String.IsNullOrEmpty(productName) ||
-                        String.IsNullOrEmpty(description) ||
-                        String.IsNullOrEmpty(brandName) ||
-                        String.IsNullOrEmpty(salesPrice) ||
-                        String.IsNullOrEmpty(listPrice) ||
-                        String.IsNullOrEmpty(inStock) ||
-                        String.IsNullOrEmpty(color) ||
-                        String.IsNullOrEmpty(categoryPath))
-                    {
-                        await warn($"Skipping product {id} with missing data");
+                    ProductRecord productRecord = new(
+                        id,
+                        productName,
+                        description,
+                        brandName,
+                        salesPrice,
+                        listPrice,
+                        categoryPath,
+                        inStock,
+                        color);
 
-                        continue;
-                    }
-
-                    string salesPriceCurrency = CurrencyUtil.ExtractCurrency(salesPrice);
-                    string listPriceCurrency = CurrencyUtil.ExtractCurrency(listPrice);
-                    string language = arguments.JobConfiguration["language"];
-                    CategoryNameAndId[] categories = CategoryUtil.SplitCategories(categoryPath)
-                        .Select(category => new CategoryNameAndId(category, new Multilingual(language, category)))
-                        .ToArray();
-
-                    Product product = new(id)
-                    {
-                        DisplayName = new Multilingual(new Language(language), productName),
-                        Brand = new Brand("fake-brand-id") { DisplayName = brandName },
-                        SalesPrice = new(salesPriceCurrency, CurrencyUtil.RemoveCurrency(salesPrice)),
-                        ListPrice = new(listPriceCurrency, CurrencyUtil.RemoveCurrency(listPrice)),
-                        CategoryPaths = [new(categories)],
-                        Data = new Dictionary<string, DataValue?>() {
-                            { "ShortDescription", new Multilingual(language, description) },
-                            { "InStock", inStock == "Yes" },
-                            { "Colors", new MultilingualCollection(language, [color]) },
-                            { "PrimaryColor", new Multilingual(language, color) },
-                            { "ImportedAt", importTimestamp }
-                        }
-                    };
+                    Product product = productRecord.MakeProduct(new Language(arguments.JobConfiguration["language"]), importTimestamp);
 
                     products.Add(product);
 
