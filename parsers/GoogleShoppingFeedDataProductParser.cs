@@ -41,7 +41,7 @@ namespace RelewiseTest.Parsers
             IEnumerable<XElement>? items = XDocument.Parse(xml)?.Root?.Element("channel")?.Elements("item") ?? throw new FormatException("Invalid XML data");
 
 	        double importTimestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-
+            Language language = new(arguments.JobConfiguration["language"]);
 
             IEnumerable<Task<Product?>> tasks = items.Select(async item => {
                 try {
@@ -66,7 +66,7 @@ namespace RelewiseTest.Parsers
                         availability,
                         color);
 
-                    Product product = productRecord.MakeProduct(new Language(arguments.JobConfiguration["language"]), importTimestamp);
+                    Product product = ProductUtil.MakeProduct(productRecord, language, importTimestamp);
 
                     await info(ProductUtil.SerializeProductDetails(product));
 

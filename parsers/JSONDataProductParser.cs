@@ -41,22 +41,23 @@ namespace RelewiseTest.Parsers
 
         private async static Task<List<Product>> ParseData(string json, JobArguments arguments, Func<string, Task> info, Func<string, Task> warn)
         {
-            List<ProductRecord> deserializedProducts = JsonConvert.DeserializeObject<List<ProductRecord>>(json) ?? throw new FormatException("Invalid JSON data");
+            List<ProductRecord> productRecords = JsonConvert.DeserializeObject<List<ProductRecord>>(json) ?? throw new FormatException("Invalid JSON data");
 
             double importTimestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            Language language = new(arguments.JobConfiguration["language"]);
 
             List<Product> products = [];
 
-            foreach (ProductRecord deserializedProduct in deserializedProducts)
+            foreach (ProductRecord productRecord in productRecords)
             {
                 try {
-                    Product product = deserializedProduct.MakeProduct(new Language(arguments.JobConfiguration["language"]), importTimestamp);
+                    Product product = ProductUtil.MakeProduct(productRecord, language, importTimestamp);
 
                     products.Add(product);
 
                     await info(ProductUtil.SerializeProductDetails(product));
                 } catch (Exception e) {
-                    await warn($"Error parsing product {deserializedProduct.ProductId}: {e.Message}");
+                    await warn($"Error parsing product {productRecord.ProductId}: {e.Message}");
 
                     continue;
                 }

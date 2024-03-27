@@ -5,6 +5,37 @@ namespace RelewiseTest.Utils
 {
     public static class ProductUtil
     {
+        public static Product MakeProduct(ProductRecord productRecord, Language language, double importTimestamp)
+        {
+            if (productRecord.IsValid() == false)
+            {
+                throw new InvalidOperationException("Product data is missing");
+            }
+
+            string salesPriceCurrency = CurrencyUtil.ExtractCurrency(productRecord.SalesPrice!);
+            string listPriceCurrency = CurrencyUtil.ExtractCurrency(productRecord.ListPrice!);
+
+            CategoryNameAndId[] categories = CategoryUtil.SplitCategories(productRecord.CategoryPath!)
+                .Select(category => new CategoryNameAndId(category, new Multilingual(language, category)))
+                .ToArray();
+
+            return new Product(productRecord.ProductId!)
+            {
+                DisplayName = new Multilingual(language, productRecord.ProductName),
+                Brand = new Brand("fake-brand-id") { DisplayName = productRecord.BrandName },
+                SalesPrice = new(salesPriceCurrency, CurrencyUtil.RemoveCurrency(productRecord.SalesPrice!)),
+                ListPrice = new(listPriceCurrency, CurrencyUtil.RemoveCurrency(productRecord.ListPrice!)),
+                CategoryPaths = [new(categories)],
+                Data = new Dictionary<string, DataValue?>() {
+                    { "ShortDescription", new Multilingual(language, productRecord.Description) },
+                    { "InStock", productRecord.InStock == "in stock" },
+                    { "Colors", new MultilingualCollection(language, [productRecord.Color]) },
+                    { "PrimaryColor", new Multilingual(language, productRecord.Color) },
+                    { "ImportedAt", importTimestamp }
+                }
+            };
+        }
+
         public static string SerializeProductDetails(Product product)
         {
             var description = product.Data?.TryGetValue("ShortDescription", out var descValue) == true ? descValue!.ToString() : "N/A";
@@ -31,7 +62,8 @@ namespace RelewiseTest.Utils
                 - ImportedAt: {importedAt}";
         }
     }
-    record ProductRecord
+
+    public record ProductRecord
     {
         [JsonConstructor]
         public ProductRecord(
@@ -77,37 +109,6 @@ namespace RelewiseTest.Utils
                 !String.IsNullOrEmpty(InStock) &&
                 !String.IsNullOrEmpty(Color) &&
                 !String.IsNullOrEmpty(CategoryPath);
-        }
-
-        public Product MakeProduct(Language language, double importTimestamp)
-        {
-            if (IsValid() == false)
-            {
-                throw new InvalidOperationException("Product data is missing");
-            }
-
-            string salesPriceCurrency = CurrencyUtil.ExtractCurrency(SalesPrice!);
-            string listPriceCurrency = CurrencyUtil.ExtractCurrency(ListPrice!);
-
-            CategoryNameAndId[] categories = CategoryUtil.SplitCategories(CategoryPath!)
-                .Select(category => new CategoryNameAndId(category, new Multilingual(language, category)))
-                .ToArray();
-
-            return new Product(ProductId!)
-            {
-                DisplayName = new Multilingual(language, ProductName),
-                Brand = new Brand("fake-brand-id") { DisplayName = BrandName },
-                SalesPrice = new(salesPriceCurrency, CurrencyUtil.RemoveCurrency(SalesPrice!)),
-                ListPrice = new(listPriceCurrency, CurrencyUtil.RemoveCurrency(ListPrice!)),
-                CategoryPaths = [new(categories)],
-                Data = new Dictionary<string, DataValue?>() {
-                    { "ShortDescription", new Multilingual(language, Description) },
-                    { "InStock", InStock == "in stock" },
-                    { "Colors", new MultilingualCollection(language, [Color]) },
-                    { "PrimaryColor", new Multilingual(language, Color) },
-                    { "ImportedAt", importTimestamp }
-                }
-            };
         }
     }
 }

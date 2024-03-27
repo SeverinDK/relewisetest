@@ -42,6 +42,7 @@ namespace RelewiseTest.Parsers
             // Split the raw data into lines and skip the first two lines (header)
             string[] lines = rawData.Split(Environment.NewLine).Skip(2).ToArray();
 
+            Language language = new(arguments.JobConfiguration["language"]);
             double importTimestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
             for (int i = 0; i < lines.Length; i++)
@@ -71,7 +72,7 @@ namespace RelewiseTest.Parsers
                         inStock,
                         color);
 
-                    Product product = productRecord.MakeProduct(new Language(arguments.JobConfiguration["language"]), importTimestamp);
+                    Product product = ProductUtil.MakeProduct(productRecord, language, importTimestamp);
 
                     products.Add(product);
 
