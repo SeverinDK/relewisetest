@@ -71,7 +71,7 @@ INFO: Parsed product:
 ...
 ```
 
-Each `INFO` message contains details about a single product, including its ID, name, description, brand, sales price, list price, colors, primary color, stock, category path, and and import timestamp. This detailed output provides a clear insight into the parsing process and the data being processed.
+Each `INFO` message contains details about a single product, including its ID, name, description, brand, sales price, list price, colors, primary color, stock, category path, and import timestamp. This detailed output provides a clear insight into the parsing process and the data being processed.
 
 After all products have been parsed, the application will print the results for each parser in the following format to summarize the total number of products parsed:
 
@@ -99,5 +99,9 @@ Each utility class serves a specific function that aids in the preprocessing or 
 - `CurrencyUtil.cs`
   - `RemoveCurrency(string input)`: Removes currency symbols or ISO currency codes from a given string, leaving only the numeric part. This method is crucial for converting price information into a decimal format that can be used for numerical operations.
   - `ExtractCurrency(string input)`: Extracts the currency symbol or ISO currency code from a given string, allowing for the identification of the currency without altering the original price string. This method is useful for scenarios where currency differentiation is needed without modifying the price data.
+
+- `ProductUtil.cs`
+  - `MakeProduct(ProductRecord productRecord, Language language, double importTimestamp)`: Creates a `Product` object from a `ProductRecord`, using specified `Language` and `importTimestamp`. It validates the `ProductRecord` for completeness, extracts and processes currency information with `CurrencyUtil`, splits category paths with `CategoryUtil`, and compiles all data into a new `Product` instance. Throws `InvalidOperationException` if the product data is missing.
+  - `SerializeProductDetails(Product product)`: Serializes the details of a `Product` into a human-readable string format. It extracts information such as product ID, display name, description, brand, pricing, colors, stock status, category paths, and import timestamp. This method is useful for logging, debugging, or displaying product information in a concise format.
 
 These utility classes enhance the application's ability to process and analyze product data by providing specialized string manipulation capabilities.
