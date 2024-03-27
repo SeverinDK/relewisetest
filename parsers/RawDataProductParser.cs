@@ -62,11 +62,13 @@ namespace RelewiseTest.Parsers
 
                     if (String.IsNullOrEmpty(id) ||
                         String.IsNullOrEmpty(productName) ||
+                        String.IsNullOrEmpty(description) ||
                         String.IsNullOrEmpty(brandName) ||
                         String.IsNullOrEmpty(salesPrice) ||
                         String.IsNullOrEmpty(listPrice) ||
                         String.IsNullOrEmpty(inStock) ||
-                        String.IsNullOrEmpty(color))
+                        String.IsNullOrEmpty(color) ||
+                        String.IsNullOrEmpty(categoryPath))
                     {
                         await warn($"Skipping product {id} with missing data");
 
